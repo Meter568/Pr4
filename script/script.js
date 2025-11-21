@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const formAnswers = document.querySelector('#formAnswers');
     const nextButton = document.querySelector('#next');
     const prevButton = document.querySelector('#prev');
+    const sendButton = document.querySelector('#send');
 
     btnOpenModal.addEventListener('click', () => {
         modalBlock.classList.add('d-block');
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const playTest = () => {
+        const finalAnswers = [];
         let numberQuestion = 0;
 
         const renderAnswers = (index) => {
@@ -41,35 +43,107 @@ document.addEventListener('DOMContentLoaded', function() {
             renderAnswers(indexQuestions);
         }
 
-        const updateButtons = () => {
-            if(numberQuestion === 0) {
-                prevButton.style.display = 'none';
-            } else {
-                prevButton.style.display = 'block';
-            }
+        const renderFinishScreen = () => {
+            questionTitle.textContent = "Дякуємо за пройдений тест!";
+            formAnswers.innerHTML = `
+                <div>
+                    <h5 class="mb-3">Залиште свій номер телефону</h5>
+                    <div class="form-group">
+                        <label for="numberPhone">Ваш номер:</label>
+                        <input 
+                            type="tel" 
+                            class="form-control" 
+                            id="numberPhone" 
+                            placeholder="+380..."
+                        />
+                    </div>
+                </div>
+            `;
+        };
 
-            if(numberQuestion === questions.length - 1) {
-                nextButton.style.display = 'none';
-            } else {
-                nextButton.style.display = 'block';
+        const renderThanksScreen = () => {
+            questionTitle.textContent = "Дякую за пройдений тест!";
+            formAnswers.innerHTML = `
+                <div class="text-center mt-4">
+                    <h3 class="mt-3">Ваш номер успішно надіслано!</h3>
+                </div>
+            `;
+            setTimeout(() => {
+                modalBlock.classList.remove('d-block');
+            }, 2000)
+        };
+
+        const updateButtons = () => {
+            switch (numberQuestion) {
+                case 0:
+                    prevButton.style.display = 'none';
+                    nextButton.style.display = 'block';
+                    sendButton.classList.remove('d-block');
+                    sendButton.classList.add('d-none');
+                    break;
+
+                case questions.length:
+                    nextButton.style.display = 'none';
+                    prevButton.style.display = 'none';
+                    sendButton.classList.remove('d-none');
+                    sendButton.classList.add('d-block');
+                    break;
+
+                default:
+                    prevButton.style.display = 'block';
+                    nextButton.style.display = 'block';
+                    sendButton.classList.remove('d-block');
+                    sendButton.classList.add('d-none');
+                    break;
             }
+        };
+
+        const checkAnswers = () => {
+            const obj = {};
+            const inputs = [...formAnswers.elements].filter((input) => input.checked || input.id === "numberPhone");
+            inputs.forEach((input, index) => {
+                if(numberQuestion >= 0 && numberQuestion < questions.length - 1) {
+                    obj[`${index} ${questions[numberQuestion].question}`] = input.value;
+                }
+
+                if(numberQuestion === questions.length) {
+                    obj["Номер телефону"] = input.value;
+                }
+            });
+            finalAnswers.push(obj);
         }
 
         nextButton.onclick = () => {
-            if(numberQuestion < questions.length - 1) {
-                numberQuestion++;
+            checkAnswers();
+            numberQuestion++;
+            if (numberQuestion < questions.length) {
                 renderQuestions(numberQuestion);
-                updateButtons();
+            } else {
+                renderFinishScreen();
             }
-        };        
+            updateButtons();
+        };
+        
 
         prevButton.onclick = () => {
-            if(numberQuestion > 0) {
-                numberQuestion--;
-                renderQuestions(numberQuestion);
-                updateButtons();
-            }
+            numberQuestion--;
+            renderQuestions(numberQuestion);
+            updateButtons();
         }
+
+        sendButton.onclick = () => {
+            const number = document.getElementById("numberPhone")?.value;
+            if (!number || number.trim() === "") {
+                alert("Будь ласка, введіть номер телефону.");
+                return;
+            }
+            console.log(finalAnswers);
+            renderThanksScreen();
+            sendButton.style.display = "none";
+            prevButton.style.display = "none";
+            nextButton.style.display = "none";
+        };
+        
 
         renderQuestions(numberQuestion);
         updateButtons();
