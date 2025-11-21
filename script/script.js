@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const obj = {};
             const inputs = [...formAnswers.elements].filter((input) => input.checked || input.id === "numberPhone");
             inputs.forEach((input, index) => {
-                if(numberQuestion >= 0 && numberQuestion < questions.length - 1) {
+                if(numberQuestion >= 0 && numberQuestion <= questions.length - 1) {
                     obj[`${index} ${questions[numberQuestion].question}`] = input.value;
                 }
 
@@ -112,7 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             finalAnswers.push(obj);
         }
-
         nextButton.onclick = () => {
             checkAnswers();
             numberQuestion++;
@@ -124,27 +123,24 @@ document.addEventListener('DOMContentLoaded', function() {
             updateButtons();
         };
         
-
         prevButton.onclick = () => {
             numberQuestion--;
             renderQuestions(numberQuestion);
             updateButtons();
         }
-
+        
         sendButton.onclick = () => {
             const number = document.getElementById("numberPhone")?.value;
             if (!number || number.trim() === "") {
                 alert("Будь ласка, введіть номер телефону.");
                 return;
             }
+            checkAnswers();
             console.log(finalAnswers);
             renderThanksScreen();
-            sendButton.style.display = "none";
-            prevButton.style.display = "none";
-            nextButton.style.display = "none";
+            sendButton.classList.remove('d-block');
+            sendButton.classList.add('d-none');
         };
-        
-
         renderQuestions(numberQuestion);
         updateButtons();
     }

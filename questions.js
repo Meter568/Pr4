@@ -32,7 +32,7 @@ export const questions = [
         type: 'radio'
     },
     {
-        question: "Додаткові інгредієнти ?",
+        question: "Додаткові інгредієнти?",
         answers: [
             {
                 title: 'Помідор',
