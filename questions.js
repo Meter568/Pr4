@@ -1,4 +1,4 @@
-export const questions = [
+const questions = [
     {
         question: "Якого кольору бургер?",
         answers: [
@@ -72,6 +72,8 @@ export const questions = [
         type: 'radio'
     }
 ];
+
+console.log(questions);
 
 // const obj = {};
 

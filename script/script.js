@@ -1,4 +1,4 @@
-import {questions} from '../questions.js';
+import { loadQuestions, uploadAnswers } from "../app.js";
 
 document.addEventListener('DOMContentLoaded', function() {
     const btnOpenModal = document.querySelector('#btnOpenModal');
@@ -10,15 +10,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevButton = document.querySelector('#prev');
     const sendButton = document.querySelector('#send');
 
-    btnOpenModal.addEventListener('click', () => {
+    btnOpenModal.addEventListener('click', async () => {
         modalBlock.classList.add('d-block');
-        playTest();
+        const questions = await loadQuestions();
+        playTest(questions);
     });
     closeModal.addEventListener('click', () => {
         modalBlock.classList.remove('d-block');
     });
 
-    const playTest = () => {
+    const playTest = (questions) => {
         const finalAnswers = [];
         let numberQuestion = 0;
 
@@ -136,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             checkAnswers();
-            console.log(finalAnswers);
+            uploadAnswers(finalAnswers);
             renderThanksScreen();
             sendButton.classList.remove('d-block');
             sendButton.classList.add('d-none');
